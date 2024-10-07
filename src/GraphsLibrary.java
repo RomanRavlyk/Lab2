@@ -1,30 +1,80 @@
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class GraphsLibrary {
     public static void main(String[] args) {
-        GraphNode node1 = new GraphNode("Node 1", 5);
-        GraphNode node2 = new GraphNode("Node 2", 25);
-        GraphNode node3 = new GraphNode("Node 3", 57);
+        Scanner scanner = new Scanner(System.in);
 
-        Graph graph = new Graph();
+        boolean orientedGraph = false;
 
-        graph.addNode(node1);
-        graph.addNode(node2);
-        graph.addNode(node3);
+        System.out.println("Is your graph oriented? yes or no: ");
+        String answer = scanner.nextLine();
 
-        try {
-            graph.createNewArc(node1, node2);
-            graph.createNewArc(node2, node3);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        if (answer.equals("yes")) {
+            orientedGraph = true;
+        } else if (!answer.equals("no")) {
+            System.out.println("Invalid input, exiting...");
+            System.exit(1);
+        }
+
+        System.out.println("How many nodes will it have?: ");
+        int numberOfNodes = scanner.nextInt();
+        scanner.nextLine();
+
+        Graph graph;
+        if (orientedGraph) {
+            graph = new OrientedGraph();
+        } else {
+            graph = new Graph();
+        }
+
+
+        for (int i = 0; i < numberOfNodes; i++) {
+            System.out.println("Enter name for node " + (i + 1) + ": ");
+            String nodeName = scanner.nextLine();
+            System.out.println("Enter data for node " + (i + 1) + ": ");
+            int nodeData = scanner.nextInt();
+            scanner.nextLine();
+
+            GraphNode node = new GraphNode(nodeName, nodeData);
+            graph.addNode(node);
+        }
+
+
+        System.out.println("How many arcs will the graph have?: ");
+        int numberOfArcs = scanner.nextInt();
+        scanner.nextLine();
+
+        for (int i = 0; i < numberOfArcs; i++) {
+            System.out.println("Enter indices of two nodes to connect by an arc (space separated): ");
+            int nodeIndex1 = scanner.nextInt();
+            int nodeIndex2 = scanner.nextInt();
+            scanner.nextLine();
+
+
+            if (nodeIndex1 >= 0 && nodeIndex1 < graph.nodes.size() &&
+                    nodeIndex2 >= 0 && nodeIndex2 < graph.nodes.size()) {
+
+                GraphNode node1 = graph.nodes.get(nodeIndex1);
+                GraphNode node2 = graph.nodes.get(nodeIndex2);
+
+                try {
+                    graph.createNewArc(node1, node2);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            } else {
+                System.out.println("Invalid node indices!");
+            }
         }
 
         graph.printGraph();
     }
 
+
     public static class Graph {
-        public LinkedList <GraphNode> nodes = null;
+        public LinkedList <GraphNode> nodes;
 
         public Graph() {
             this.nodes = new LinkedList<>();
@@ -36,7 +86,7 @@ public class GraphsLibrary {
 
         public void printGraph() {
             for (GraphNode node : nodes) {
-                System.out.print("(Node: " + node.getName() + " Data: " + node.getNodeData() + " Neighbours: ");
+                System.out.print("(Node: " + node.getName() + ", Data: " + node.getNodeData() + ", Neighbours: ");
 
                 if (node.getNeighbourNodes().isEmpty()) {
                     System.out.print("None");
@@ -82,8 +132,8 @@ public class GraphsLibrary {
     }
 
     public static class GraphNode {
-        public String name = " ";
-        public int data = 0;
+        public String name;
+        public int data;
         public ArrayList <GraphNode> neighbourNodes = null;
 
         public GraphNode(String name, int node) {
@@ -122,4 +172,29 @@ public class GraphsLibrary {
         }
 
     }
+
+    public static class OrientedGraph extends Graph {
+        public void createNewArc (GraphNode node1, GraphNode node2) throws Exception {
+            boolean findNode1 = false;
+            boolean findNode2 = false;
+
+            for (GraphNode node: nodes) {
+                if (node.equals(node1)) {
+                    findNode1 = true;
+                }
+                if ((node.equals(node2))) {
+                    findNode2 = true;
+                }
+            }
+
+            if (!findNode1 || ! findNode2) {
+                throw new Exception("Node not in graph!");
+            }
+
+            node1.addNeighbour(node2);
+        }
+
+
+    }
+
 }
