@@ -10,6 +10,7 @@ public class ItemsBox {
             double boxHeight = scanner.nextDouble();
             double boxWidth = scanner.nextDouble();
             double boxLength = scanner.nextDouble();
+            scanner.nextLine();
             Box box = new Box(boxHeight, boxWidth, boxLength);
 
             while (true) {
@@ -24,6 +25,7 @@ public class ItemsBox {
                 double itemHeight = scanner.nextDouble();
                 double itemWidth = scanner.nextDouble();
                 double itemLength = scanner.nextDouble();
+                scanner.nextLine();
 
                 Item item = new Item(itemHeight, itemWidth, itemLength, itemName);
 
