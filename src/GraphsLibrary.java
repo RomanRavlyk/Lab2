@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class GraphsLibrary {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -70,6 +71,7 @@ public class GraphsLibrary {
         }
 
         graph.printGraph();
+        scanner.close();
     }
 
 
@@ -131,6 +133,28 @@ public class GraphsLibrary {
         }
     }
 
+    public static class OrientedGraph extends Graph {
+        public void createNewArc (GraphNode node1, GraphNode node2) throws Exception {
+            boolean findNode1 = false;
+            boolean findNode2 = false;
+
+            for (GraphNode node: nodes) {
+                if (node.equals(node1)) {
+                    findNode1 = true;
+                }
+                if ((node.equals(node2))) {
+                    findNode2 = true;
+                }
+            }
+
+            if (!findNode1 || ! findNode2) {
+                throw new Exception("Node not in graph!");
+            }
+
+            node1.addNeighbour(node2);
+        }
+    }
+
     public static class GraphNode {
         public String name;
         public int data;
@@ -170,31 +194,5 @@ public class GraphsLibrary {
             }
             neighbourNodes.add(Node);
         }
-
     }
-
-    public static class OrientedGraph extends Graph {
-        public void createNewArc (GraphNode node1, GraphNode node2) throws Exception {
-            boolean findNode1 = false;
-            boolean findNode2 = false;
-
-            for (GraphNode node: nodes) {
-                if (node.equals(node1)) {
-                    findNode1 = true;
-                }
-                if ((node.equals(node2))) {
-                    findNode2 = true;
-                }
-            }
-
-            if (!findNode1 || ! findNode2) {
-                throw new Exception("Node not in graph!");
-            }
-
-            node1.addNeighbour(node2);
-        }
-
-
-    }
-
 }
