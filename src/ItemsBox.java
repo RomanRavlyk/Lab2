@@ -1,45 +1,52 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
 public class ItemsBox {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        try {
+            System.out.println("Enter the dimensions of the box (height, width, length): ");
+            double boxHeight = scanner.nextDouble();
+            double boxWidth = scanner.nextDouble();
+            double boxLength = scanner.nextDouble();
+            Box box = new Box(boxHeight, boxWidth, boxLength);
 
-        System.out.println("Enter the dimensions of the box (height, width, length): ");
-        double boxHeight = scanner.nextDouble();
-        double boxWidth = scanner.nextDouble();
-        double boxLength = scanner.nextDouble();
-        Box box = new Box(boxHeight, boxWidth, boxLength);
+            while (true) {
+                System.out.println("Enter the name of the item (or 'exit' to finish): ");
+                String itemName = scanner.next();
 
-        while (true) {
-            System.out.println("Enter the name of the item (or 'exit' to finish): ");
-            String itemName = scanner.next();
+                if (itemName.equalsIgnoreCase("exit")) {
+                    break;
+                }
 
-            if (itemName.equalsIgnoreCase("exit")) {
-                break;
+                System.out.println("Enter the dimensions of the item (height, width, length): ");
+                double itemHeight = scanner.nextDouble();
+                double itemWidth = scanner.nextDouble();
+                double itemLength = scanner.nextDouble();
+
+                Item item = new Item(itemHeight, itemWidth, itemLength, itemName);
+
+                try {
+                    box.addItemInBox(item);
+                    System.out.println("Item added to the box.");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
 
-            System.out.println("Enter the dimensions of the item (height, width, length): ");
-            double itemHeight = scanner.nextDouble();
-            double itemWidth = scanner.nextDouble();
-            double itemLength = scanner.nextDouble();
-
-            Item item = new Item(itemHeight, itemWidth, itemLength, itemName);
-
-            try {
-                box.addItemInBox(item);
-                System.out.println("Item added to the box.");
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+            System.out.println("Items in the box: ");
+            box.getAllItems();
+        } catch (InputMismatchException e) {
+            System.out.println("You typed wrong data!");
+        } finally {
+            scanner.close();
+            System.out.println("Scanner closed.");
         }
 
-        System.out.println("Items in the box: ");
-        box.getAllItems();
-        scanner.close();
     }
 
-    abstract static class Size {
+    public static abstract class Size {
         protected double height;
         protected double width;
         protected double length;
@@ -50,13 +57,30 @@ public class ItemsBox {
             this.length = length;
         }
 
-        abstract public double getHeight();
-        abstract public void setHeight(double height);
-        abstract public double getWidth();
-        abstract public void setWidth(double width);
-        abstract public double getLength();
-        abstract public void setLength(double length);
-        abstract double calculateVolume();
+        public double getHeight() {
+            return height;
+        }
+
+        public void setHeight(double height) {
+            this.height = height;
+        }
+
+        public double getWidth() {
+            return width;
+        }
+
+        public void setWidth(double width) {
+            this.width = width;
+        }
+
+        public double getLength() {
+            return length;
+        }
+
+        public void setLength(double length) {
+            this.length = length;
+        }
+
     }
 
     public static class Box extends Size {
@@ -66,43 +90,9 @@ public class ItemsBox {
             super(height, width, length);
         }
 
-        @Override
-        public double getHeight() {
-            return height;
-        }
-
-        @Override
-        public void setHeight(double height) {
-            this.height = height;
-        }
-
-        @Override
-        public double getWidth() {
-            return width;
-        }
-
-        @Override
-        public void setWidth(double width) {
-            this.width = width;
-        }
-
-        @Override
-        public double getLength() {
-            return length;
-        }
-
-        @Override
-        public void setLength(double length) {
-            this.length = length;
-        }
-
-        @Override
-        double calculateVolume() {
-            return height * width * length;
-        }
 
         public void addItemInBox(Item item) throws Exception {
-            if (item.getHeight() > height || item.getWidth() > width || item.getLength() > length) {
+            if (item.getHeight() > this.getHeight() || item.getWidth() > this.getWidth() || item.getLength() > this.getLength()) {
                 throw new Exception("Item dimensions exceed box dimensions!");
             }
 
@@ -143,39 +133,5 @@ public class ItemsBox {
             this.name = name;
         }
 
-        @Override
-        double calculateVolume() {
-            return height * width * length;
-        }
-
-        @Override
-        public double getHeight() {
-            return height;
-        }
-
-        @Override
-        public void setHeight(double height) {
-            this.height = height;
-        }
-
-        @Override
-        public double getWidth() {
-            return width;
-        }
-
-        @Override
-        public void setWidth(double width) {
-            this.width = width;
-        }
-
-        @Override
-        public double getLength() {
-            return length;
-        }
-
-        @Override
-        public void setLength(double length) {
-            this.length = length;
-        }
     }
 }
