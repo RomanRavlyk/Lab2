@@ -1,5 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class GraphsLibrary {
@@ -30,7 +31,6 @@ public class GraphsLibrary {
             graph = new Graph();
         }
 
-
         for (int i = 0; i < numberOfNodes; i++) {
             System.out.println("Enter name for node " + (i + 1) + ": ");
             String nodeName = scanner.nextLine();
@@ -42,7 +42,6 @@ public class GraphsLibrary {
             graph.addNode(node);
         }
 
-
         System.out.println("How many arcs will the graph have?: ");
         int numberOfArcs = scanner.nextInt();
         scanner.nextLine();
@@ -53,6 +52,16 @@ public class GraphsLibrary {
             int nodeIndex2 = scanner.nextInt();
             scanner.nextLine();
 
+            System.out.println("Enter width for the arc from " + nodeIndex1 + " to " + nodeIndex2 + ": ");
+            int width1 = scanner.nextInt();
+            scanner.nextLine();
+
+            int width2 = width1;
+            if (!orientedGraph) {
+                System.out.println("Enter width for the reverse arc from " + nodeIndex2 + " to " + nodeIndex1 + ": ");
+                width2 = scanner.nextInt();
+                scanner.nextLine();
+            }
 
             if (nodeIndex1 >= 0 && nodeIndex1 < graph.nodes.size() &&
                     nodeIndex2 >= 0 && nodeIndex2 < graph.nodes.size()) {
@@ -61,7 +70,7 @@ public class GraphsLibrary {
                 GraphNode node2 = graph.nodes.get(nodeIndex2);
 
                 try {
-                    graph.createNewArc(node1, node2);
+                    graph.createNewArc(node1, width1, node2, width2);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -93,8 +102,8 @@ public class GraphsLibrary {
                 if (node.getNeighbourNodes().isEmpty()) {
                     System.out.print("None");
                 } else {
-                    for (GraphNode neighbor : node.getNeighbourNodes()) {
-                        System.out.print(neighbor.getName() + " ");
+                    for (Map.Entry<GraphNode, Integer> entry : node.getNeighbourNodes().entrySet()) {
+                        System.out.print(entry.getKey().getName() + " (width: " + entry.getValue() + ") ");
                     }
                 }
 
@@ -111,7 +120,7 @@ public class GraphsLibrary {
             nodes.remove(index);
         }
 
-        public void createNewArc (GraphNode node1, GraphNode node2) throws Exception {
+        public void createNewArc(GraphNode node1, Integer width1,  GraphNode node2, Integer width2) throws Exception {
             boolean findNode1 = false;
             boolean findNode2 = false;
 
@@ -128,13 +137,13 @@ public class GraphsLibrary {
                 throw new Exception("Node not in graph!");
             }
 
-            node1.addNeighbour(node2);
-            node2.addNeighbour(node1);
+            node1.addNeighbour(node2, width2);
+            node2.addNeighbour(node1, width1);
         }
     }
 
     public static class OrientedGraph extends Graph {
-        public void createNewArc (GraphNode node1, GraphNode node2) throws Exception {
+        public void createNewArc (GraphNode node1, Integer width1,  GraphNode node2, Integer width2) throws Exception {
             boolean findNode1 = false;
             boolean findNode2 = false;
 
@@ -151,19 +160,20 @@ public class GraphsLibrary {
                 throw new Exception("Node not in graph!");
             }
 
-            node1.addNeighbour(node2);
+            node1.addNeighbour(node2, width2 );
         }
     }
 
     public static class GraphNode {
         public String name;
         public int data;
-        public ArrayList <GraphNode> neighbourNodes = null;
+
+        Map<GraphNode, Integer> neighbourNodes;
 
         public GraphNode(String name, int node) {
             this.name = name;
             this.data = node;
-            this.neighbourNodes = new ArrayList<>();
+            this.neighbourNodes = new HashMap<>();
         }
 
         public String getName() {
@@ -174,7 +184,7 @@ public class GraphsLibrary {
             this.name = name;
         }
 
-        public int getNodeData () {
+        public int getNodeData() {
             return this.data;
         }
 
@@ -182,17 +192,15 @@ public class GraphsLibrary {
             this.data = node;
         }
 
-        public ArrayList <GraphNode> getNeighbourNodes() {
+        public Map<GraphNode, Integer> getNeighbourNodes() {
             return neighbourNodes;
         }
 
-        public void addNeighbour(GraphNode Node) throws Exception {
-            for (GraphNode node : neighbourNodes) {
-                if (node.equals(Node)) {
-                    throw new Exception("This arc already exists in the graph!");
-                }
+        public void addNeighbour(GraphNode Node, Integer width) throws Exception {
+            if (neighbourNodes.containsKey(Node)) {
+                throw new Exception("This arc already exists in the graph!");
             }
-            neighbourNodes.add(Node);
+            neighbourNodes.put(Node, width);
         }
     }
 }
