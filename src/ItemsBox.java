@@ -45,7 +45,6 @@ public class ItemsBox {
             scanner.close();
             System.out.println("Scanner closed.");
         }
-
     }
 
     public static abstract class Size {

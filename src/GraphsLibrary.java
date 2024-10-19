@@ -11,11 +11,11 @@ public class GraphsLibrary {
         boolean orientedGraph = false;
 
         System.out.println("Is your graph oriented? yes or no: ");
-        String answer = scanner.nextLine();
+        String userAnswer = scanner.nextLine();
 
-        if (answer.equals("yes")) {
+        if (userAnswer.equals("yes")) {
             orientedGraph = true;
-        } else if (!answer.equals("no")) {
+        } else if (!userAnswer.equals("no")) {
             System.out.println("Invalid input, exiting...");
             System.exit(1);
         }
@@ -48,29 +48,23 @@ public class GraphsLibrary {
 
         for (int i = 0; i < numberOfArcs; i++) {
             System.out.println("Enter indices of two nodes to connect by an arc (space separated): ");
-            int nodeIndex1 = scanner.nextInt();
-            int nodeIndex2 = scanner.nextInt();
+            int firstNodeIndex = scanner.nextInt();
+            int secondNodeIndex = scanner.nextInt();
             scanner.nextLine();
 
-            System.out.println("Enter width for the arc from " + nodeIndex1 + " to " + nodeIndex2 + ": ");
-            int width1 = scanner.nextInt();
+            System.out.println("Enter width for the arc from " + firstNodeIndex + " to " + secondNodeIndex + ": ");
+            int lengthBetweenNodes = scanner.nextInt();
             scanner.nextLine();
 
-            int width2 = width1;
-            if (!orientedGraph) {
-                System.out.println("Enter width for the reverse arc from " + nodeIndex2 + " to " + nodeIndex1 + ": ");
-                width2 = scanner.nextInt();
-                scanner.nextLine();
-            }
 
-            if (nodeIndex1 >= 0 && nodeIndex1 < graph.nodes.size() &&
-                    nodeIndex2 >= 0 && nodeIndex2 < graph.nodes.size()) {
+            if (firstNodeIndex >= 0 && firstNodeIndex < graph.nodes.size() &&
+                    secondNodeIndex >= 0 && secondNodeIndex < graph.nodes.size()) {
 
-                GraphNode node1 = graph.nodes.get(nodeIndex1);
-                GraphNode node2 = graph.nodes.get(nodeIndex2);
+                GraphNode firstNode = graph.nodes.get(firstNodeIndex);
+                GraphNode secondNode = graph.nodes.get(secondNodeIndex);
 
                 try {
-                    graph.createNewArc(node1, width1, node2, width2);
+                    graph.createNewArc(firstNode, lengthBetweenNodes, secondNode);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -85,7 +79,7 @@ public class GraphsLibrary {
 
 
     public static class Graph {
-        public LinkedList <GraphNode> nodes;
+        public LinkedList<GraphNode> nodes;
 
         public Graph() {
             this.nodes = new LinkedList<>();
@@ -112,55 +106,55 @@ public class GraphsLibrary {
             System.out.println();
         }
 
-        public void addNode (GraphNode node){
+        public void addNode(GraphNode node){
             nodes.add(node);
         }
 
-        public void removeNode (int index) {
+        public void removeNode(int index) {
             nodes.remove(index);
         }
 
-        public void createNewArc(GraphNode node1, Integer width1,  GraphNode node2, Integer width2) throws Exception {
-            boolean findNode1 = false;
-            boolean findNode2 = false;
+        public void createNewArc(GraphNode firstNode, Integer lengthBetweenNodes,  GraphNode secondNode) throws Exception {
+            boolean findFirstNode = false;
+            boolean findSecondNode = false;
 
             for (GraphNode node: nodes) {
-                if (node.equals(node1)) {
-                    findNode1 = true;
+                if (node.equals(firstNode)) {
+                    findFirstNode = true;
                 }
-                if ((node.equals(node2))) {
-                    findNode2 = true;
+                if ((node.equals(secondNode))) {
+                    findSecondNode = true;
                 }
             }
 
-            if (!findNode1 || ! findNode2) {
+            if (!findFirstNode || !findSecondNode) {
                 throw new Exception("Node not in graph!");
             }
 
-            node1.addNeighbour(node2, width2);
-            node2.addNeighbour(node1, width1);
+            firstNode.addNeighbour(secondNode, lengthBetweenNodes);
+            secondNode.addNeighbour(firstNode, lengthBetweenNodes);
         }
     }
 
     public static class OrientedGraph extends Graph {
-        public void createNewArc (GraphNode node1, Integer width1,  GraphNode node2, Integer width2) throws Exception {
-            boolean findNode1 = false;
-            boolean findNode2 = false;
+        public void createNewArc(GraphNode firstNode, Integer lengthBetweenNodes, GraphNode secondNode) throws Exception {
+            boolean findFirstNode = false;
+            boolean findSecondNode = false;
 
             for (GraphNode node: nodes) {
-                if (node.equals(node1)) {
-                    findNode1 = true;
+                if (node.equals(firstNode)) {
+                    findFirstNode = true;
                 }
-                if ((node.equals(node2))) {
-                    findNode2 = true;
+                if ((node.equals(secondNode))) {
+                    findFirstNode = true;
                 }
             }
 
-            if (!findNode1 || ! findNode2) {
+            if (!findFirstNode || !findSecondNode) {
                 throw new Exception("Node not in graph!");
             }
 
-            node1.addNeighbour(node2, width2 );
+            firstNode.addNeighbour(secondNode, lengthBetweenNodes);
         }
     }
 
